@@ -1,6 +1,9 @@
+from django.contrib.auth import authenticate
+
 from rest_framework import permissions, response, status, generics
 from rest_framework_simplejwt import tokens
 
+from .models import User 
 from .permissions import CanGetOTP
 from .serializers import *
 from .utils import sendToken
@@ -14,10 +17,22 @@ class UserLoginAPIView(generics.GenericAPIView):
     An endpoint for users to enter their credentials and recieve OTP
     """
     permission_classes = [permissions.AllowAny]
-    serializer_class = []
+    serializer_class = [LoginSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = LoginSerializer(data=request.data)
+        if s.is_valid():
+            phone = s.validated_data["phone"]
+            password = s.validated_data["password"]
+            
+            if authenticate(request=request, phone=phone, password=password):
+                user = authenticate(request=request, phone=phone, password=password)
+                sendToken(request=request)
+                return response.Response(data=user, status=status.HTTP_202_ACCEPTED)
+            else:
+                return response.Response("User does not exist!", status=status.HTTP_404_NOT_FOUND)
+        else:
+            return response.Response(data=s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class OTPLoginAPIView(generics.GenericAPIView):

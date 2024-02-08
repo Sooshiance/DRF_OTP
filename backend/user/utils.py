@@ -22,7 +22,7 @@ def passwordResetEmail(request, user):
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         "token": tokens.Token(token=request.data["token"]),
     })
-    # otp_mail_message = renderers.TemplateHTMLRenderer()
+    otp_mail_message = renderers.JSONRenderer()
     to_mail = user.email
     mail = EmailMessage(mail_subject, message, from_email, to=[to_mail])
     mail.send()
@@ -35,7 +35,7 @@ def sendToken(request):
     
     request.data["otp_secret_key"] = totp.secret
     
-    valid_date = datetime.now() + timedelta(minutes=3)
+    valid_date = datetime.now() + timedelta(minutes=2)
     
     request.data["otp_valid_date"] = str(valid_date)
     
