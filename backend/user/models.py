@@ -22,6 +22,7 @@ class AllUser(BaseUserManager):
             phone=phone,
             first_name=first_name,
             last_name=last_name,
+            **kwargs,
         )
         user.is_active = False
         user.set_password(password)
@@ -104,6 +105,7 @@ class Profile(models.Model):
     email      = models.EmailField()
     first_name = models.CharField(max_length=30)
     last_name  = models.CharField(max_length=30)
+    pic        = models.ImageField(upload_to='profile/')
     
     @property
     def fullName(self):
