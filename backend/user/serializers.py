@@ -25,6 +25,13 @@ class LoginSerializer(serializers.Serializer):
     )
 
 
+class OTPSerializer(serializers.Serializer):
+    """
+    Serializer class for recieving OTP
+    """
+    otp = serializers.IntegerField(write_only=True, required=True)
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Serializer class for user's profile
