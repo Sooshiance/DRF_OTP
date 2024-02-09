@@ -28,16 +28,12 @@ def passwordResetEmail(request, user):
     mail.send()
 
 
-def sendToken(request):
+def sendToken(user):
     totp = pyotp.TOTP(pyotp.random_base32(), interval=180)
     
     otp = totp.now()
     
-    request.data["otp_secret_key"] = totp.secret
-    
-    valid_date = datetime.now() + timedelta(minutes=2)
-    
-    request.data["otp_valid_date"] = str(valid_date)
+    user.otp = otp
     
     print(f"The OTP is : {otp}")
     

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Profile
+from .models import User, Profile, OTP
 
 
 class Admin(UserAdmin):
@@ -22,6 +22,12 @@ class AdminProfile(admin.ModelAdmin):
     sortable_by = ('pk', 'user')
 
 
+class OTPAdmin(admin.ModelAdmin):
+    list_display = ['user', 'otp']
+
+
 admin.site.register(User, Admin)
 
 admin.site.register(Profile, AdminProfile)
+
+admin.site.register(OTP, OTPAdmin)

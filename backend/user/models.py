@@ -99,6 +99,14 @@ class User(AbstractBaseUser):
         return True
 
 
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp  = models.CharField(max_length=6, unique=True)
+    
+    def __str__(self) -> str:
+        return f"{self.user}"
+
+
 class Profile(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     phone      = models.CharField(max_length=11)

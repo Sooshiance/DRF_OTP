@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import permissions, response, status, generics
 from rest_framework_simplejwt import tokens
 
-from .models import User 
+from .models import User , OTP
 from .permissions import CanGetOTP
 from .serializers import *
 from .utils import sendToken
@@ -26,9 +26,9 @@ class UserLoginAPIView(generics.GenericAPIView):
             password = s.validated_data["password"]
             
             if authenticate(request=request, phone=phone, password=password):
-                user = authenticate(request=request, phone=phone, password=password)
-                sendToken(request=request)
-                return response.Response(data=user, status=status.HTTP_202_ACCEPTED)
+                user = User.objects.get(phone=phone)
+                sendToken(user=user)
+                return response.Response(data=request.data, status=status.HTTP_202_ACCEPTED)
             else:
                 return response.Response("User does not exist!", status=status.HTTP_404_NOT_FOUND)
         else:
@@ -40,31 +40,51 @@ class OTPLoginAPIView(generics.GenericAPIView):
     An endpoint for users to evaluate their OTP token
     """
     permission_classes = []
-    serializer_class = []
+    serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = OTPSerializer(data=request.data)
+        if s.is_valid():
+            otp = s.validated_data["otp"]
+            if OTP.objects.get(otp=otp):
+                user_otp = OTP.objects.get(otp=otp)
+                user = User.objects.get(user=user_otp)
+                token = tokens.RefreshToken.for_user(user)
+                # s serializer is not valid for creating `token` objects
+                # I will find a way to store the token
+                # s["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+                user_otp.delete()
+        return response.Response(s.data, status=status.HTTP_205_RESET_CONTENT)
 
 
 class AuthenticatedAPIView(generics.GenericAPIView):
     """
     An endpoint for authenticated users
     """
-    permission_classes = []
-    serializer_class = []
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = [ProfileSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        user = request.user.pk 
+        p = Profile.objects.get(user=user)
+        s = ProfileSerializer(data=p)
+        return response.Response(data=s.data, status=status.HTTP_200_OK)
 
 
 class LogoutAPIView(generics.GenericAPIView):
     """
     An endpoint for users to logout from system
     """
-    permission_classes = []
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        try:
+            refresh_token = request.data["refresh"]
+            token = tokens.RefreshToken(refresh_token)
+            token.blacklist()
+            return response.Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 ####################### TODO : Registeration #######################
