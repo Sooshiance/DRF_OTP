@@ -54,6 +54,10 @@ class OTPLoginAPIView(generics.GenericAPIView):
                 # I will find a way to store the token
                 # s["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
                 user_otp.delete()
+            else:
+                return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return response.Response(s.errors, status=status.HTTP_408_REQUEST_TIMEOUT)
         return response.Response(s.data, status=status.HTTP_205_RESET_CONTENT)
 
 
