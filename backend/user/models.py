@@ -86,7 +86,7 @@ class User(AbstractBaseUser):
         return str(self.first_name) + " " + str(self.last_name)
 
     def __str__(self):
-        return self.email
+        return f"{self.phone}"
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -100,7 +100,7 @@ class User(AbstractBaseUser):
 
 
 class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_otp")
     otp  = models.CharField(max_length=6, unique=True)
     
     def __str__(self) -> str:
@@ -108,7 +108,7 @@ class OTP(models.Model):
 
 
 class Profile(models.Model):
-    user       = models.ForeignKey(User, on_delete=models.CASCADE)
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_profile")
     phone      = models.CharField(max_length=11)
     email      = models.EmailField()
     first_name = models.CharField(max_length=30)

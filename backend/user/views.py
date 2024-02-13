@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 
-from rest_framework import permissions, response, status, generics
+from rest_framework import permissions, response, status, generics, renderers
 from rest_framework_simplejwt import tokens
 
 from .models import User , OTP
@@ -27,7 +27,8 @@ class UserLoginAPIView(generics.GenericAPIView):
             
             if authenticate(request=request, phone=phone, password=password):
                 user = User.objects.get(phone=phone)
-                sendToken(user=user)
+                otp_token = sendToken(user=user)
+                OTP.objects.create(user=user,otp=otp_token).save()
                 return response.Response(data=request.data, status=status.HTTP_202_ACCEPTED)
             else:
                 return response.Response("User does not exist!", status=status.HTTP_404_NOT_FOUND)
@@ -47,18 +48,22 @@ class OTPLoginAPIView(generics.GenericAPIView):
         if s.is_valid():
             otp = s.validated_data["otp"]
             if OTP.objects.get(otp=otp):
-                user_otp = OTP.objects.get(otp=otp)
-                user = User.objects.get(user=user_otp)
+                uo = OTP.objects.get(otp=otp)
+                print(uo)
+                user = User.objects.get(phone=uo)
+                user_serializer = UserSerializer(data=user)
                 token = tokens.RefreshToken.for_user(user)
-                # s serializer is not valid for creating `token` objects
-                # I will find a way to store the token
-                # s["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
-                user_otp.delete()
+                print(token)
+                user_serializer.is_valid(raise_exception=True)
+                print(user_serializer)
+                data = user_serializer.data 
+                data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}                
+                uo.delete()
+                return response.Response(user_serializer.data, status=status.HTTP_205_RESET_CONTENT)
             else:
                 return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return response.Response(s.errors, status=status.HTTP_408_REQUEST_TIMEOUT)
-        return response.Response(s.data, status=status.HTTP_205_RESET_CONTENT)
 
 
 class AuthenticatedAPIView(generics.GenericAPIView):
@@ -98,8 +103,8 @@ class RegisterAPIView(generics.GenericAPIView):
     """
     An endpoint for users to register their account
     """
-    permission_classes = []
-    serializer_class = []
+    permission_classes = [permissions.AllowAny]
+    serializer_class = [UserSerializer]
     
     def post(self, request, *args, **kwargs):
         return response.Response()
@@ -110,7 +115,7 @@ class ActivateAccountAPIView(generics.GenericAPIView):
     An endpoint to activate their account via OTP 
     """
     permission_classes = []
-    serializer_class = []
+    serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
         return response.Response()
@@ -135,7 +140,7 @@ class OTPVerifyAPIView(generics.GenericAPIView):
     An endpoint to check users OTP
     """
     permission_classes = []
-    serializer_class = []
+    serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
         return response.Response()
@@ -172,6 +177,7 @@ class EmailVerifyAPIView(generics.GenericAPIView):
     """
     permission_classes = []
     serializer_class = []
+    renderer_classes = []
     
     def post(self, request, *args, **kwargs):
         return response.Response()
