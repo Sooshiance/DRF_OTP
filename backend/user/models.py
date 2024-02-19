@@ -100,9 +100,9 @@ class User(AbstractBaseUser):
 
 
 class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_otp")
-    otp  = models.CharField(max_length=6, unique=True)
-    created_at = models.TimeField(auto_now_add=True)
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_otp")
+    otp        = models.CharField(max_length=6, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self) -> str:
         return f"{self.user}"
