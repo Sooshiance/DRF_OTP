@@ -37,6 +37,6 @@ def sendToken(user):
     
     print(f"The OTP is : {otp}")
     
-    return otp 
-    
     # send a SMS to User's verified Phone number
+    
+    return otp

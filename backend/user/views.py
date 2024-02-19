@@ -47,19 +47,16 @@ class OTPLoginAPIView(generics.GenericAPIView):
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
+            phone = s.validated_data["phone"]
             if OTP.objects.get(otp=otp):
                 uo = OTP.objects.get(otp=otp)
                 print(uo)
                 user = User.objects.get(phone=uo)
-                user_serializer = UserSerializer(data=user)
                 token = tokens.RefreshToken.for_user(user)
-                print(token)
-                user_serializer.is_valid(raise_exception=True)
-                print(user_serializer)
-                data = user_serializer.data 
+                data = s.data
                 data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}                
                 uo.delete()
-                return response.Response(user_serializer.data, status=status.HTTP_205_RESET_CONTENT)
+                return response.Response(data, status=status.HTTP_205_RESET_CONTENT)
             else:
                 return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
@@ -107,7 +104,13 @@ class RegisterAPIView(generics.GenericAPIView):
     serializer_class = [UserSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = UserSerializer(data=request.data)
+        if s.is_valid():
+            s.save()
+            otp = sendToken(user=s.data)
+            return response.Response(data=s.data, status=status.HTTP_201_CREATED)
+        else:
+            return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class ActivateAccountAPIView(generics.GenericAPIView):

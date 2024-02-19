@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ["phone", "email", "password", "first_name", "last_name", "pic"]
+        fields = ["id", "phone", "email", "password", "first_name", "last_name", "pic"]
 
 
 class LoginSerializer(serializers.Serializer):
@@ -29,7 +29,8 @@ class OTPSerializer(serializers.Serializer):
     """
     Serializer class for recieving OTP
     """
-    otp = serializers.IntegerField(write_only=True, required=True)
+    phone = serializers.CharField(required=True)
+    otp   = serializers.IntegerField(write_only=True, required=True)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -39,3 +40,11 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
+
+
+class ResetPassowrdSerializer(serializers.Serializer):
+    """
+    Serializer class for entring the password and confirm one
+    """
+    password         = serializers.CharField(write_only=True, required=True, help_text='Leave empty if no change needed', style={'input_type': 'password', 'placeholder': '••••••••••••'})
+    confirm_password = serializers.CharField(write_only=True, required=True, help_text='Leave empty if no change needed', style={'input_type': 'password', 'placeholder': '••••••••••••'})

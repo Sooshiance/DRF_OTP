@@ -53,7 +53,7 @@ class AllUser(BaseUserManager):
         )
         user.is_staff = True
         user.is_active  = True
-        user.is_superuser = True        
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
@@ -71,7 +71,7 @@ class User(AbstractBaseUser):
     is_active    = models.BooleanField(default=False, null=False, verbose_name='وضعیت فعالیت')
     
     # TODO : for OTP, if someone use OTP more than certain time, it becomes false for certain time 
-    is_locked    = models.BooleanField(default=True, null=False, verbose_name='')
+    is_locked    = models.BooleanField(default=False, null=False, verbose_name='')
     
     is_staff     = models.BooleanField(default=False, null=False, verbose_name='دسترسی ادمین')
     is_superuser = models.BooleanField(default=False, null=False, verbose_name='مدیر')
