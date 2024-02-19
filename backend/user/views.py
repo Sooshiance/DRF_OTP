@@ -47,11 +47,12 @@ class OTPLoginAPIView(generics.GenericAPIView):
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
+            print(otp)
             # phone = s.validated_data["phone"]
             if OTP.objects.get(otp=otp):
+                # TODO : `uo` is stands for User OTP
                 uo = OTP.objects.get(otp=otp)
-                print(uo)
-                user = User.objects.get(phone=uo)
+                user = User.objects.get(phone=uo.user)
                 token = tokens.RefreshToken.for_user(user)
                 data = s.data
                 data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}                
@@ -108,6 +109,8 @@ class RegisterAPIView(generics.GenericAPIView):
         if s.is_valid():
             s.save()
             otp = sendToken(user=s.data)
+            pk = User.objects.get(phone=s.validated_data["phone"])
+            OTP.objects.create(user=pk, otp=otp).save()
             return response.Response(data=s.data, status=status.HTTP_201_CREATED)
         else:
             return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -121,7 +124,25 @@ class ActivateAccountAPIView(generics.GenericAPIView):
     serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = OTPSerializer(data=request.data)
+        if s.is_valid():
+            otp = s.validated_data["otp"]
+            if OTP.objects.get(otp=otp):
+                # TODO : `uo` is stand for User OTP
+                uo = OTP.objects.get(otp=otp)
+                user = User.objects.get(phone=uo)
+                token = tokens.RefreshToken.for_user(user)
+                # TODO : Activating the User
+                user.is_active = True
+                user.save()
+                data = s.data
+                data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}                
+                uo.delete()
+                return response.Response(data, status=status.HTTP_205_RESET_CONTENT)
+            else:
+                return response.Response(s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return response.Response(s.errors, status=status.HTTP_408_REQUEST_TIMEOUT)
 
 
 ####################### TODO : Reset_Password via OTP #######################
@@ -129,10 +150,10 @@ class ActivateAccountAPIView(generics.GenericAPIView):
 
 class VerifyPhonExistAPIView(generics.GenericAPIView):
     """
-    An endpoint to 
+    An endpoint for get User's phone and send OTP to initiate reset their passwordss
     """
-    permission_classes = []
-    serializer_class = []
+    permission_classes = [permissions.AllowAny]
+    serializer_class = [PhoneSerializer]
     
     def post(self, request, *args, **kwargs):
         return response.Response()

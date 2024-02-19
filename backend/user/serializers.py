@@ -42,6 +42,13 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PhoneSerializer(serializers.Serializer):
+    """
+    Serializer class for getting User's phone to start reset password process
+    """
+    phone = serializers.CharField(required=True)
+
+
 class ResetPassowrdSerializer(serializers.Serializer):
     """
     Serializer class for entring the password and confirm one

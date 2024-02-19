@@ -5,7 +5,7 @@ from .models import User, Profile, OTP
 
 
 class Admin(UserAdmin):
-    list_display = ('phone', 'email', 'is_active', 'pk')
+    list_display = ('phone', 'email', 'is_active')
     filter_horizontal = ()
     list_filter = ('is_active',)
     fieldsets = ()
@@ -13,13 +13,13 @@ class Admin(UserAdmin):
     list_display_links = ('phone', 'email')
     # This line below added because 'ordering' attribute need a dependency
     ordering = ('email',)
-    readonly_fields = ('pk',)
+    # readonly_fields = ('pk',)
 
 
 class AdminProfile(admin.ModelAdmin):
-    list_display = ['user', 'email', 'pk']
+    list_display = ['user', 'email', 'fullName']
     search_fields = ('phone', 'user')
-    sortable_by = ('pk', 'user')
+    # sortable_by = ('pk', 'user')
 
 
 class OTPAdmin(admin.ModelAdmin):

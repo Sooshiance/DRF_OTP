@@ -108,7 +108,7 @@ class OTP(models.Model):
 
 
 class Profile(models.Model):
-    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_profile")
+    user       = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_profile")
     phone      = models.CharField(max_length=11)
     email      = models.EmailField()
     first_name = models.CharField(max_length=30)
@@ -120,4 +120,4 @@ class Profile(models.Model):
         return str(self.first_name) + " " + str(self.last_name)
     
     def __str__(self) -> str:
-        return f"{self.user} {self.phone} {self.fullName}"
+        return f"{self.user}"
