@@ -47,8 +47,6 @@ class OTPLoginAPIView(generics.GenericAPIView):
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
-            print(otp)
-            # phone = s.validated_data["phone"]
             if OTP.objects.get(otp=otp):
                 # TODO : `uo` is stands for User OTP
                 uo = OTP.objects.get(otp=otp)
@@ -150,13 +148,20 @@ class ActivateAccountAPIView(generics.GenericAPIView):
 
 class VerifyPhonExistAPIView(generics.GenericAPIView):
     """
-    An endpoint for get User's phone and send OTP to initiate reset their passwordss
+    An endpoint for get User's phone and send OTP to initiate reset their passwords
     """
     permission_classes = [permissions.AllowAny]
     serializer_class = [PhoneSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = PhoneSerializer(data=request.data)
+        if s.is_valid():
+            user = User.objects.get(phone=s.validated_data["phone"])
+            user_otp = sendToken(user=user)
+            OTP.objects.get(user=user,otp=user_otp).save()
+            return response.Response(data=s.data, status=status.HTTP_200_OK)
+        else:
+            return response.Response(data=s.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OTPVerifyAPIView(generics.GenericAPIView):
@@ -167,52 +172,26 @@ class OTPVerifyAPIView(generics.GenericAPIView):
     serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
+        s = OTPSerializer(data=request.data)
+        if s.is_valid():
+            otp = s.validated_data["otp"]
+            if OTP.objects.get(otp=otp):
+                user_otp = OTP.objects.get(otp=otp)
+                user_otp.delete()
+                return response.Response(data=s.data, status=status.HTTP_200_OK)
+            else:
+                return response.Response(data=s.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return response.Response(data=s.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OTPResetLinkAPIView(generics.GenericAPIView):
     """
-    An endpoint to reset their password
+    An endpoint for User's to reset their password
     """
     permission_classes = []
-    serializer_class = []
+    serializer_class = [ResetPassowrdSerializer]
     
     def post(self, request, *args, **kwargs):
-        return response.Response()
-
-
-####################### TODO : Reset_Password via Email #######################
-
-
-class VerifyEmailExistAPIView(generics.GenericAPIView):
-    """
-    An endpoint to check and send user reset link
-    """
-    permission_classes = []
-    serializer_class = []
-    
-    def post(self, request, *args, **kwargs):
-        return response.Response()
-
-
-class EmailVerifyAPIView(generics.GenericAPIView):
-    """
-    An endpoint to evaluate users Email
-    """
-    permission_classes = []
-    serializer_class = []
-    renderer_classes = []
-    
-    def post(self, request, *args, **kwargs):
-        return response.Response()
-
-
-class EmailResetLinkAPIView(generics.GenericAPIView):
-    """
-    An endpoint to reset their password
-    """
-    permission_classes = []
-    serializer_class = []
-    
-    def post(self, request, *args, **kwargs):
+        s = ResetPassowrdSerializer(data=request.data)
         return response.Response()

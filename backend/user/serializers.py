@@ -16,7 +16,7 @@ class LoginSerializer(serializers.Serializer):
     """
     Serializer class for Login
     """
-    phone = serializers.CharField(required=True)
+    phone    = serializers.CharField(required=True)
     password = serializers.CharField(
         write_only=True,
         required=True,
