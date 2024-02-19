@@ -29,7 +29,7 @@ class OTPSerializer(serializers.Serializer):
     """
     Serializer class for recieving OTP
     """
-    phone = serializers.CharField(required=True)
+    phone = serializers.CharField(required=False)
     otp   = serializers.IntegerField(write_only=True, required=True)
 
 

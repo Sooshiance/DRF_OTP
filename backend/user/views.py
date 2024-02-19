@@ -47,7 +47,7 @@ class OTPLoginAPIView(generics.GenericAPIView):
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
-            phone = s.validated_data["phone"]
+            # phone = s.validated_data["phone"]
             if OTP.objects.get(otp=otp):
                 uo = OTP.objects.get(otp=otp)
                 print(uo)
