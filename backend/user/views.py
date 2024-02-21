@@ -7,6 +7,7 @@ from .models import User , OTP
 from .permissions import CanGetOTP
 from .serializers import *
 from .utils import sendToken
+from .tasks import deleteOTP
 
 
 ####################### TODO : Authentication #######################
@@ -44,6 +45,7 @@ class OTPLoginAPIView(generics.GenericAPIView):
     serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
+        deleteOTP(user=request.user)
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
@@ -122,6 +124,7 @@ class ActivateAccountAPIView(generics.GenericAPIView):
     serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
+        deleteOTP(user=request.user)
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
@@ -172,6 +175,7 @@ class OTPVerifyAPIView(generics.GenericAPIView):
     serializer_class = [OTPSerializer]
     
     def post(self, request, *args, **kwargs):
+        deleteOTP(user=request.user)
         s = OTPSerializer(data=request.data)
         if s.is_valid():
             otp = s.validated_data["otp"]
