@@ -5,9 +5,9 @@ from .models import User, Profile, OTP
 
 
 class Admin(UserAdmin):
-    list_display = ('pk', 'phone', 'superuser')
+    list_display = ('pk', 'phone', 'is_superuser')
     filter_horizontal = ()
-    list_filter = ('superuser', )
+    list_filter = ('is_superuser', )
     fieldsets = ()
     ordering = ('pk', )
 
