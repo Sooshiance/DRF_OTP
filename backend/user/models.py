@@ -14,7 +14,7 @@ class AllUser(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
         )
-        user.is_active = False
+        user.is_active = True
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -55,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email        = models.EmailField(unique=True, max_length=244, blank=True, null=True)
     first_name   = models.CharField(max_length=30, null=True, blank=True)
     last_name    = models.CharField(max_length=50, null=True, blank=True)
-    is_active    = models.BooleanField(default=False, null=False)
+    is_active    = models.BooleanField(default=True, null=False)
     is_staff     = models.BooleanField(default=False, null=False)
     is_superuser = models.BooleanField(default=False, null=False)
 
