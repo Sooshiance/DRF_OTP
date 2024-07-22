@@ -24,6 +24,4 @@ def sendToken(user):
 
     OTP.objects.create(user=user, otp=otp).save()
 
-    user.otp = otp
-
     return {'otp': otp, 'error': False}
