@@ -22,5 +22,5 @@ class TokenSerializer(serializers.Serializer):
 
 
 class OTPSerializer(serializers.Serializer):
-    token = serializers.CharField()
+    otp   = serializers.CharField()
     phone = serializers.CharField()

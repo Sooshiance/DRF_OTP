@@ -36,13 +36,9 @@ class TestLoginAPIView(APITestCase):
             otp_token = otp.otp
 
             response1 = self.client.post(self.confirm_otp, {
-                "phone": f'{self.user.phone}', "otp": f'{otp_token}'})
+                "phone": self.user.phone, "otp": otp_token})
 
-            print(response1.headers)
-
-            print(f'response status_code ===== {response1.status_code}')
-
-            # self.assertEqual(response1.status_code, 205)
+            self.assertEqual(response1.status_code, 205)
 
         except otp.DoesNotExist:
 
