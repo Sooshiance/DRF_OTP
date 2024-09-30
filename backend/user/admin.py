@@ -6,7 +6,9 @@ from .models import User, Profile
 
 class UserAdmin(BaseUserAdmin):
     list_display = ['phone', 'email','username']
+    filter_horizontal = ()
     list_filter = ['is_superuser', 'is_private']
+    fieldsets = ()
     search_fields = ['email']
 
 
