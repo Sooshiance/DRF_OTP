@@ -1,6 +1,16 @@
 # Created by https://www.toptal.com/developers/gitignore/api/django,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,react
 
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
 # <django-project-name>/staticfiles/
@@ -11,6 +21,7 @@
 *$py.class
 
 # C extensions
+*.so
 
 # Distribution / packaging
 .Python
@@ -175,4 +186,4 @@ psd
 thumb
 sketch
 
-# End of https://www.toptal.com/developers/gitignore/api/django,react,c++,cmake
+# End of https://www.toptal.com/developers/gitignore/api/django,react

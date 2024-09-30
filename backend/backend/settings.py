@@ -140,6 +140,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# TODO: Override the Django User model
+AUTH_USER_MODEL = "user.User"
+
+
 # TODO : Rest framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
