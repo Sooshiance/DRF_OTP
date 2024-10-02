@@ -13,10 +13,10 @@ class Story(models.Model):
         return f"{self.user.username}'s story"
     
     def likeCount(self):
-        return self.likes.count()
+        return self.likes_story.count()
     
     def commentCount(self):
-        return self.comments.count()
+        return self.comments_story.count()
     
     class Meta:
         verbose_name = 'Story'
@@ -24,16 +24,16 @@ class Story(models.Model):
 
 
 class Like(models.Model):
-    user  = models.ForeignKey(User, on_delete=models.CASCADE)
-    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='likes')
+    user  = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes_user')
+    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='likes_story')
 
     def __str__(self):
         return f"{self.user} {self.story}"
 
 
 class Comment(models.Model):
-    user       = models.ForeignKey(User, on_delete=models.CASCADE)
-    story      = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='comments')
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments_user')
+    story      = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='comments_story')
     content    = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
